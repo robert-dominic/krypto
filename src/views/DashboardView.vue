@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, watch, ref } from 'vue'
 import useMarketStore from '../stores/useMarketStore'
 import useStreamStore from '../stores/useStreamStore'
 import { useDataStream } from '../composables/useDataStream'
@@ -147,19 +147,32 @@ const lineData = computed(() =>
     value: c.close,
   })),
 )
+
+// --- Responsive chart heights ---
+
+const windowWidth = ref(window.innerWidth)
+
+function onResize() { windowWidth.value = window.innerWidth }
+
+onMounted(() => window.addEventListener('resize', onResize))
+onUnmounted(() => window.removeEventListener('resize', onResize))
+
+const mainChartHeight  = computed(() => windowWidth.value < 768 ? '260px' : '380px')
+const smallChartHeight = computed(() => windowWidth.value < 768 ? '160px' : '200px')
 </script>
 
 <template>
   <div class="flex flex-col h-screen overflow-hidden bg-bg-primary">
     <DashboardHeader />
 
-    <!-- Main content below the fixed header -->
-    <div class="flex-1 overflow-hidden mt-14 p-3 gap-3 flex flex-col xl:flex-row">
+    <!-- Mobile: vertical scroll. xl: fixed-height side-by-side panels. -->
+    <div class="flex-1 overflow-y-auto xl:overflow-hidden mt-14 p-3">
+      <div class="flex flex-col xl:flex-row gap-3 xl:h-full">
 
       <!-- ═══════════════════════════════════════════════════
            LEFT COLUMN — charts (65% on xl, full on smaller)
            ═══════════════════════════════════════════════════ -->
-      <div class="flex flex-col gap-3 xl:w-[65%] min-w-0 overflow-hidden">
+      <div class="flex flex-col gap-3 xl:w-[65%] min-w-0 xl:overflow-hidden">
 
         <!-- Chart controls -->
         <div class="flex items-center justify-between flex-wrap gap-2 flex-shrink-0">
@@ -224,24 +237,24 @@ const lineData = computed(() =>
             v-if="marketStore.selectedChartType === 'candlestick'"
             :data="marketStore.activeCandles"
             :symbol="marketStore.activeCoin"
-            height="380px"
+            :height="mainChartHeight"
           />
           <LineChart
             v-else-if="marketStore.selectedChartType === 'line'"
             :data="lineData"
             :symbol="marketStore.activeCoin"
-            height="380px"
+            :height="mainChartHeight"
           />
           <AreaChart
             v-else
             :series="[{ name: getCoinShortLabel(marketStore.activeCoin), data: lineData, color: '#0080ff' }]"
-            height="380px"
+            :height="mainChartHeight"
           />
         </div>
         </ErrorBoundary>
 
-        <!-- Bottom row: portfolio + volume — hidden on mobile -->
-        <div class="hidden md:grid grid-cols-2 gap-3 flex-shrink-0">
+        <!-- Bottom row: portfolio + volume — visible on all sizes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-shrink-0">
           <!-- Portfolio area chart -->
           <div class="bg-bg-secondary border border-border rounded-lg">
             <div class="px-4 pt-3 pb-1 border-b border-border">
@@ -249,7 +262,7 @@ const lineData = computed(() =>
                 Portfolio Value
               </span>
             </div>
-            <AreaChart :series="portfolioSeries" height="200px" :show-legend="false" />
+            <AreaChart :series="portfolioSeries" :height="smallChartHeight" :show-legend="false" />
           </div>
 
           <!-- Volume bar chart -->
@@ -259,7 +272,7 @@ const lineData = computed(() =>
                 24h Volume
               </span>
             </div>
-            <BarChart :data="volumeBarData" height="200px" />
+            <BarChart :data="volumeBarData" :height="smallChartHeight" />
           </div>
         </div>
       </div>
@@ -267,7 +280,7 @@ const lineData = computed(() =>
       <!-- ═══════════════════════════════════════════════════
            RIGHT COLUMN — metrics + feed (35% on xl)
            ═══════════════════════════════════════════════════ -->
-      <div class="flex flex-col gap-3 xl:w-[35%] min-w-0 flex-shrink-0 overflow-hidden">
+      <div class="flex flex-col gap-3 xl:w-[35%] min-w-0 xl:flex-shrink-0 xl:overflow-hidden">
 
         <!-- Metric cards: 2×2 grid -->
         <div class="grid grid-cols-2 gap-3 flex-shrink-0">
@@ -299,11 +312,12 @@ const lineData = computed(() =>
           />
         </div>
 
-        <!-- Activity feed — fills remaining vertical space -->
-        <div class="flex-1 bg-bg-secondary border border-border rounded-lg overflow-hidden min-h-0">
+        <!-- Activity feed: fixed height on mobile, fills remaining space on xl -->
+        <div class="h-96 xl:flex-1 xl:h-auto bg-bg-secondary border border-border rounded-lg overflow-hidden min-h-0">
           <ActivityFeed />
         </div>
       </div>
+      </div><!-- end inner xl:flex-row -->
     </div>
 
     <!-- Stream status badge — fixed bottom-left -->
