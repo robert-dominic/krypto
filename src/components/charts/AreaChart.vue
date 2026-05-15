@@ -74,6 +74,7 @@ const option = computed<ChartOption>(() => ({
       color: '#6b6b9a',
       fontSize: 11,
       fontFamily: 'Geist Mono, monospace',
+      hideOverlap: true,
       formatter: (value: number) => formatTimestamp(value, 'time').slice(0, 5),
     },
   },

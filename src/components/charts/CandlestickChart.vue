@@ -93,7 +93,7 @@ const option = computed<ChartOption>(() => {
         axisLine: { show: false },
         axisTick: { show: false },
         splitLine: { show: false },
-        axisLabel: { ...AXIS_LABEL_STYLE, fontSize: 10 },
+        axisLabel: { ...AXIS_LABEL_STYLE, fontSize: 10, hideOverlap: true },
       },
     ],
 
