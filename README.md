@@ -1,4 +1,4 @@
-# Krypto Terminal — HNG Stage 5A
+# Krypto Terminal
 
 A real-time crypto trading terminal dashboard built with Vue 3, Pinia, and ECharts. Streams live price data from Binance public WebSocket feeds and presents it in a Bloomberg-style dark interface with candlestick charts, volume analysis, trade activity feed, and connection health monitoring.
 
