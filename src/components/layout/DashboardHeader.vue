@@ -8,18 +8,10 @@ import type { CoinSymbol } from '../../types/market.types'
 const streamStore = useStreamStore()
 const marketStore = useMarketStore()
 
-// Live clock string, updated every second
 const clock = ref('')
 
 function updateClock() {
   clock.value = formatTimestamp(Date.now(), 'time')
-}
-
-// Formats uptime seconds as MM:SS
-function formatUptime(seconds: number): string {
-  const m = String(Math.floor(seconds / 60)).padStart(2, '0')
-  const s = String(seconds % 60).padStart(2, '0')
-  return `${m}:${s}`
 }
 
 const COINS: { symbol: CoinSymbol; label: string }[] = [
@@ -43,31 +35,11 @@ onUnmounted(() => clearInterval(clockInterval))
   <header class="fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-4
                  bg-bg-secondary border-b border-border">
 
-    <!-- Left: logo + stream status -->
-    <div class="flex items-center gap-3 min-w-0 w-56">
+    <!-- Left: logo only -->
+    <div class="flex items-center min-w-0 w-56">
       <span class="font-mono text-lg font-bold tracking-widest text-accent-blue select-none">
         KRYPTO
       </span>
-
-      <!-- Pulse dot: green when connected, yellow connecting, red otherwise -->
-      <span
-        class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse"
-        :class="{
-          'bg-accent-green': streamStore.status === 'connected',
-          'bg-accent-yellow': streamStore.status === 'connecting',
-          'bg-accent-red': streamStore.status === 'error' || streamStore.status === 'disconnected',
-          'bg-text-secondary': streamStore.status === 'paused',
-        }"
-      />
-
-      <div class="flex flex-col leading-none min-w-0">
-        <span class="text-xs font-medium" :class="streamStore.statusColor">
-          {{ streamStore.statusLabel }}
-        </span>
-        <span v-if="streamStore.lastConnectedAt" class="text-[10px] text-text-muted font-mono mt-0.5">
-          {{ formatUptime(streamStore.uptimeSeconds) }}
-        </span>
-      </div>
     </div>
 
     <!-- Center: coin selector tabs -->

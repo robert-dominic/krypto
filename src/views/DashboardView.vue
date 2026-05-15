@@ -172,7 +172,7 @@ const smallChartHeight = computed(() => windowWidth.value < 768 ? '160px' : '200
       <!-- ═══════════════════════════════════════════════════
            LEFT COLUMN — charts (65% on xl, full on smaller)
            ═══════════════════════════════════════════════════ -->
-      <div class="flex flex-col gap-3 xl:w-[65%] min-w-0 xl:overflow-hidden">
+      <div class="flex flex-col gap-3 xl:w-[65%] min-w-0 xl:overflow-y-auto no-scrollbar">
 
         <!-- Chart controls -->
         <div class="flex items-center justify-between flex-wrap gap-2 flex-shrink-0">
@@ -280,7 +280,7 @@ const smallChartHeight = computed(() => windowWidth.value < 768 ? '160px' : '200
       <!-- ═══════════════════════════════════════════════════
            RIGHT COLUMN — metrics + feed (35% on xl)
            ═══════════════════════════════════════════════════ -->
-      <div class="flex flex-col gap-3 xl:w-[35%] min-w-0 xl:flex-shrink-0 xl:overflow-hidden">
+      <div class="flex flex-col gap-3 xl:w-[35%] min-w-0 xl:flex-shrink-0 xl:overflow-y-auto no-scrollbar">
 
         <!-- Metric cards: 2×2 grid -->
         <div class="grid grid-cols-2 gap-3 flex-shrink-0">
